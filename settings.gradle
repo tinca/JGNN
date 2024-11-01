@@ -1,0 +1,4 @@
+rootProject.name = 'JGNN'
+include 'JGNN'
+include 'examples'
+
