@@ -16,14 +16,7 @@ import mklab.JGNN.core.matrix.SparseMatrix;
 import mklab.JGNN.core.tensor.DenseTensor;
 
 /**
- * Encloses data of a single structure graph:
- * - adjacency
- * - node features:
- *      - chemical element
- * - edge features:
- *      - bond order
- * - structure features:
- *      - physico-chemical properties
+ *
  */
 public class SolubilityDataset extends Dataset {
     private static final Logger LOG = LoggerFactory.getLogger(SolubilityDataset.class);
@@ -52,7 +45,7 @@ public class SolubilityDataset extends Dataset {
 
             while (line != null) {
                 String[] cols = line.split(",");
-                importStructure(cols[SMILES], cols[ID]).ifPresent(structure -> {
+                importStructure(cols[SMILES]).ifPresent(structure -> {
                     var record = new MoleculeRecord(
                             cols[ID],
                             cols[SMILES],
@@ -72,20 +65,13 @@ public class SolubilityDataset extends Dataset {
         return records;
     }
 
-    private Optional<Structure> importStructure(String smilesContent, String id) {
+    private Optional<Structure> importStructure(String smilesContent) {
         try {
-            var doc = new SmilesImporter().read(smilesContent);
-            if (!doc.getStructures().isEmpty()) {
-                return Optional.of(doc.getStructures().get(0));
-            }
-            else if (!doc.getMixtures().isEmpty()) {
-                LOG.warn("Mixture found - {} : {}", id, smilesContent);
-            }
+            return Optional.of(new SmilesImporter().read(smilesContent).getStructures().get(0));
         } catch (Throwable e) {
-            LOG.warn("SMILES import error: {} for {}: {}", e.getMessage(), id, smilesContent);
+            LOG.warn("SMILES import error: {}", e.getMessage());
+            return Optional.empty();
         }
-
-        return Optional.empty();
     }
 
     private Matrix createAdjacency() {
