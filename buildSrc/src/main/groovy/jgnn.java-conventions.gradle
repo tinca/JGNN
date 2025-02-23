@@ -8,7 +8,7 @@ plugins {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(19)
+        languageVersion = JavaLanguageVersion.of(23)
         // https://github.com/gradle/foojay-toolchains
         vendor = JvmVendorSpec.ADOPTIUM
         implementation = JvmImplementation.VENDOR_SPECIFIC
@@ -46,6 +46,6 @@ test {
 
 eclipse {
     jdt {
-        javaRuntimeName = "JavaSE-19"
+        javaRuntimeName = "JavaSE-17"
     }
 }
