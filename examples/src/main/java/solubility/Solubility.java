@@ -15,14 +15,6 @@ import mklab.JGNN.nn.loss.report.VerboseLoss;
 import mklab.JGNN.nn.optimizers.Adam;
 
 /**
- * Encloses data of a single structure graph:
- * - adjacency
- * - node features:
- *      - chemical element
- * - edge features:
- *      - bond order
- * - structure features:
- *      - physico-chemical properties
  */
 public class Solubility {
 
