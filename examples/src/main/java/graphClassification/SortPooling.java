@@ -1,22 +1,18 @@
 package graphClassification;
 
 import java.util.Arrays;
-
 import mklab.JGNN.adhoc.ModelBuilder;
 import mklab.JGNN.adhoc.ModelTraining;
 import mklab.JGNN.adhoc.parsers.LayeredBuilder;
 import mklab.JGNN.adhoc.train.AGFTraining;
 import mklab.JGNN.core.Matrix;
 import mklab.JGNN.core.Tensor;
-import mklab.JGNN.core.ThreadPool;
-import mklab.JGNN.nn.Loss;
 import mklab.JGNN.nn.Model;
 import mklab.JGNN.nn.initializers.XavierNormal;
 import mklab.JGNN.nn.loss.Accuracy;
 import mklab.JGNN.nn.loss.CategoricalCrossEntropy;
 import mklab.JGNN.nn.loss.report.VerboseLoss;
 import mklab.JGNN.nn.optimizers.Adam;
-import mklab.JGNN.nn.optimizers.BatchOptimizer;
 
 /**
  * 

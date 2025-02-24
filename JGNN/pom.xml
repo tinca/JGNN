@@ -1,20 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>mklab</groupId>
+	<parent>
+		<groupId>mklab</groupId>
+		<artifactId>JGNN-root</artifactId>
+		<version>1.0</version>
+	</parent>
+
 	<artifactId>JGNN</artifactId>
-	<version>nightly</version>
 	<packaging>jar</packaging>
 
 	<name>JGNN</name>
 	<url>https://github.com/MKLab-ITI/JGNN</url>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.target>17</maven.compiler.target>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.release>17</maven.compiler.release>
-	</properties>
 
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
@@ -33,7 +30,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.2</version>
+				<version>0.8.12</version>
 				<executions>
 					<execution>
 						<goals>

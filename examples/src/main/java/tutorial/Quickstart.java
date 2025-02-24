@@ -4,19 +4,16 @@ import mklab.JGNN.adhoc.Dataset;
 import mklab.JGNN.adhoc.ModelBuilder;
 import mklab.JGNN.adhoc.ModelTraining;
 import mklab.JGNN.adhoc.datasets.Cora;
-import mklab.JGNN.adhoc.parsers.FastBuilder;
 import mklab.JGNN.adhoc.parsers.Neuralang;
 import mklab.JGNN.adhoc.train.SampleClassification;
 import mklab.JGNN.core.Matrix;
-import mklab.JGNN.nn.Model;
 import mklab.JGNN.core.Slice;
 import mklab.JGNN.core.Tensor;
 import mklab.JGNN.core.empty.EmptyTensor;
+import mklab.JGNN.nn.Model;
 import mklab.JGNN.nn.initializers.XavierNormal;
-import mklab.JGNN.nn.loss.Accuracy;
 import mklab.JGNN.nn.loss.CategoricalCrossEntropy;
 import mklab.JGNN.nn.loss.report.VerboseLoss;
-import mklab.JGNN.nn.optimizers.Adam;
 
 /**
  * Demonstrates classification with the GCN architecture.

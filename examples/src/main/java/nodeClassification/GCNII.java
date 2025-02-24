@@ -1,61 +1,44 @@
 package nodeClassification;
 
-import java.nio.file.Paths;
-
 import mklab.JGNN.adhoc.Dataset;
 import mklab.JGNN.adhoc.ModelBuilder;
 import mklab.JGNN.adhoc.ModelTraining;
 import mklab.JGNN.adhoc.datasets.Cora;
-import mklab.JGNN.adhoc.parsers.Neuralang;
+import mklab.JGNN.adhoc.parsers.FastBuilder;
 import mklab.JGNN.adhoc.train.SampleClassification;
 import mklab.JGNN.core.Matrix;
 import mklab.JGNN.nn.Model;
 import mklab.JGNN.core.Slice;
 import mklab.JGNN.core.Tensor;
-import mklab.JGNN.core.empty.EmptyTensor;
 import mklab.JGNN.nn.initializers.XavierNormal;
 import mklab.JGNN.nn.loss.Accuracy;
 import mklab.JGNN.nn.loss.CategoricalCrossEntropy;
 import mklab.JGNN.nn.loss.report.VerboseLoss;
 import mklab.JGNN.nn.optimizers.Adam;
 
-/**
- * Demonstrates classification with an architecture defined through the scripting engine.
- * 
- * @author Emmanouil Krasanakis
- */
-public class Scripting {
+public class GCNII {
+
 	public static void main(String[] args) throws Exception {
 		Dataset dataset = new Cora();
 		dataset.graph().setMainDiagonal(1).setToSymmetricNormalization();
 		
-		String architectures = """
-			fn classify(nodes, h, epochs: !3000, patience: !100, lr: !0.01) {
-				return softmax(h[nodes], dim: "row");
-			}
-			fn gcnlayer(A, h, hidden: 16, reg: 0.005) {
-				return A@h@matrix(?, hidden, reg) + vector(hidden);
-			}
-			fn gcn(A, h, classes: extern) {
-				h = gcnlayer(A, h);
-				h = dropout(relu(h), 0.5);
-				return gcnlayer(A, h, hidden: classes);
-			}
-		""";
-		
-		long numSamples = dataset.samples().getSlice().size();
 		long numClasses = dataset.labels().getCols();
-		ModelBuilder modelBuilder = new Neuralang()
-				.parse(architectures)
-				.constant("A", dataset.graph())
-				.constant("h", dataset.features())
-				.var("nodes")
+		ModelBuilder modelBuilder = new FastBuilder(dataset.graph(), dataset.features())
+				.config("reg", 0.0005)
 				.config("classes", numClasses)
-				.config("hidden", numClasses+2)
-				.out("classify(nodes, gcn(A,h))")
-				.autosize(new EmptyTensor(numSamples));
-		System.out.println("Preferred learning rate: "+modelBuilder.getConfig("lr"));
+				.config("hidden", numClasses)
+				.constant("I", Matrix.eye(numClasses))
+				.layer("h{l+1}=relu(h{l}@matrix(features, hidden, reg)+vector(hidden))")
+				.rememberAs("0")
+				.constant("a", 0.1)
+				.futureConstants("b{l}", l->0.5/(l+1), 64)
+				.layerRepeat("ch{l}=b{l}*matrix(hidden, hidden)+(1-b{l})*I; h{l+1}=relu((1-a)*(dropout(A, 0.5)@h{l})+a*h{0})@ch{l}", 64)
+				.layer("h{l+1}=h{l}@matrix(hidden, classes)+vector(classes)")
+				.classify()
+				.assertBackwardValidity()
+				.print();
 		
+
 		Slice nodes = dataset.samples().getSlice().shuffle(100);
 		ModelTraining trainer = new SampleClassification()
 				// set data
@@ -64,7 +47,9 @@ public class Scripting {
 				.setTrainingSamples(nodes.range(0, 0.6))
 				.setValidationSamples(nodes.range(0.6, 0.8))
 				// configure how training is conducted
-				.configFrom(modelBuilder)
+				.setOptimizer(new Adam(0.01))
+				.setEpochs(300)
+				.setPatience(100)
 				.setLoss(new CategoricalCrossEntropy())
 				.setValidationLoss(new VerboseLoss(new CategoricalCrossEntropy(), new Accuracy()));
 		
